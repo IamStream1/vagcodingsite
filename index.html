@@ -84,23 +84,6 @@
         </div> 
     </section>
 
-    <section id="kalkulacka" class="services-section" style="border-top: 1px solid var(--border); background-color: rgba(7, 8, 10, 0.2);">
-        <div class="container">
-            <h2 class="section-title">Spočítejte si cenu dopravy</h2>
-            <p class="section-subtitle">Pokud nemáte cestu k nám, rád dojedu přímo k Vám.</p>
-            
-            <div style="max-width: 500px; margin: 0 auto; background-color: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 8px; text-align: center;">
-                <label for="distance" style="display: block; font-weight: 600; margin-bottom: 10px; color: var(--text-main); font-size: 0.95rem;">Vzdálenost k Vám (v km):</label>
-                <input type="number" id="distance" min="0" placeholder="Zadejte počet km (např. 25)" oninput="calculateTravel()" style="width: 100%; padding: 10px; background-color: var(--bg-dark); border: 1px solid var(--border); color: #fff; border-radius: 5px; font-size: 1.1rem; text-align: center; font-weight: bold; margin-bottom: 20px; outline: none;">
-                
-                <div style="border-top: 1px dashed var(--border); padding-top: 15px;">
-                    <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px;">Celková cena počítá s příjezdem a odjezdem:</span>
-                    <span id="travel-result" style="font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 700; color: var(--accent);">0 Kč</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <section id="kontakt" class="contact-section">
         <div class="container">
             <div class="contact-box">
@@ -143,20 +126,5 @@
         </div>
     </footer>
 
-    <script>
-        function calculateTravel() {
-            const distanceInput = document.getElementById('distance').value;
-            const resultSpan = document.getElementById('travel-result');
-            
-            const ratePerKm = 10; 
-            
-            if (distanceInput && distanceInput > 0) {
-                const totalCost = distanceInput * 2 * ratePerKm;
-                resultSpan.textContent = totalCost + ' Kč';
-            } else {
-                resultSpan.textContent = '0 Kč';
-            }
-        }
-    </script>
 </body>
 </html>

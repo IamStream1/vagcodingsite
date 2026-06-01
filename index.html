@@ -55,7 +55,7 @@
                 <div class="spec-card">
                     <div class="card-icon">⚙️</div>
                     <h3>Kompatibilita</h3>
-                    <p>Plná hardwarová podpora pro starší generace i moderní modely aut do přelomu let 2023/2024.</p>
+                    <p>Plná hardwarová podpora for starší generace i moderní modely aut do přelomu let 2023/2024.</p>
                 </div>
             </div>
         </div>
@@ -153,7 +153,6 @@
             document.getElementById('loginModal').classList.remove('show-modal');
         }
 
-        // Pomocná šifrovací funkce (SHA-256)
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);                    
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -166,28 +165,22 @@
             const user = document.getElementById('adminUser').value;
             const pass = document.getElementById('adminPass').value;
             
-            // Zašifrování zadaného jména a hesla pro kontrolu
             const userHash = await sha256(user);
             const passHash = await sha256(pass);
 
-            /* PŘÍSTUPOVÉ ÚDAJE (JSOU BEZPEČNĚ ZAŠIFROVANÉ):
-              Výchozí jméno: admin
-              Výchozí heslo: VAGcoding2026
-            */
+            // Uživatelské jméno: admin
             const targetUserHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; 
-            const targetPassHash = "9d35c24e64f89d34346fa0ca480dd769062eb142b7f7396c4293f947ee19702a";
+            // NOVÉ HESLO: 1212
+            const targetPassHash = "7d969115bc2c80c2f66436f5218da3a216999238e9389255f01344400e26dcf5";
 
             if (userHash === targetUserHash && passHash === targetPassHash) {
-                // Správné údaje -> přesměrování na skrytou kalkulačku
                 window.location.href = 'admin.html';
             } else {
-                // Chyba -> zobrazení varování
                 document.getElementById('loginError').style.display = 'block';
                 document.getElementById('adminPass').value = '';
             }
         }
 
-        // Zavření okna kliknutím mimo box
         window.onclick = function(event) {
             const modal = document.getElementById('loginModal');
             if (event.target === modal) {

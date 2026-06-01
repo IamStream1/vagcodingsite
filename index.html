@@ -11,6 +11,23 @@
 </head>
 <body>
 
+    <div class="admin-login-nav">
+        <button class="btn-admin-nav" onclick="openLoginModal()">🔒 Admin Login</button>
+    </div>
+
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeLoginModal()">&times;</span>
+            <h3 class="modal-title">🔐 Ověření administrátora</h3>
+            <div id="loginError" class="login-error-msg">Neznámé jméno nebo nesprávné heslo.</div>
+            <form onsubmit="handleAdminLogin(event)">
+                <input type="text" id="adminUser" placeholder="Uživatelské jméno" required autocomplete="username">
+                <input type="password" id="adminPass" placeholder="Heslo" required autocomplete="current-password">
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Přihlásit se</button>
+            </form>
+        </div>
+    </div>
+
     <header class="hero">
         <div class="hero-content">
             <h1>Kódování funkcí pro vozy skupiny <span>VAG</span></h1>
@@ -126,5 +143,57 @@
         </div>
     </footer>
 
+    <script>
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('show-modal');
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show-modal');
+        }
+
+        // Pomocná šifrovací funkce (SHA-256)
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);                    
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function handleAdminLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            
+            // Zašifrování zadaného jména a hesla pro kontrolu
+            const userHash = await sha256(user);
+            const passHash = await sha256(pass);
+
+            /* PŘÍSTUPOVÉ ÚDAJE (JSOU BEZPEČNĚ ZAŠIFROVANÉ):
+              Výchozí jméno: admin
+              Výchozí heslo: VAGcoding2026
+            */
+            const targetUserHash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; 
+            const targetPassHash = "9d35c24e64f89d34346fa0ca480dd769062eb142b7f7396c4293f947ee19702a";
+
+            if (userHash === targetUserHash && passHash === targetPassHash) {
+                // Správné údaje -> přesměrování na skrytou kalkulačku
+                window.location.href = 'admin.html';
+            } else {
+                // Chyba -> zobrazení varování
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('adminPass').value = '';
+            }
+        }
+
+        // Zavření okna kliknutím mimo box
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target === modal) {
+                closeLoginModal();
+            }
+        }
+    </script>
 </body>
 </html>

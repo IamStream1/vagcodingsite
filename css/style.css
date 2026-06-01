@@ -380,30 +380,20 @@ td strong {
     .container { padding: 0 15px; } /* Menší okraj na mobilu, aby zbyl prostor pro text */
     .contact-box { padding: 20px 10px; }
 }
-/* --- ADMIN LOGIN A MODAL STYLY --- */
-.admin-login-nav {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    z-index: 999;
-}
-
-.btn-admin-nav {
+/* --- ADMIN LOGIN DOLE V PATIČCE V3 --- */
+.btn-admin-footer {
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-muted);
-    padding: 6px 14px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    border: none;
+    color: rgba(156, 163, 175, 0.3); /* Hodně nenápadná barva, která splývá s textem */
+    font-size: 0.75rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease;
+    padding: 4px 10px;
 }
 
-.btn-admin-nav:hover {
-    border-color: var(--accent);
-    color: var(--text-main);
-    background-color: rgba(217, 43, 43, 0.05);
+.btn-admin-footer:hover {
+    color: var(--accent); /* Zčervená až při najetí myší */
 }
 
 /* Pozadí vyskakovacího okna */
@@ -459,7 +449,6 @@ td strong {
     color: var(--text-main);
 }
 
-/* Vstupy v formuláři */
 .modal-box input {
     width: 100%;
     padding: 10px;
@@ -476,7 +465,6 @@ td strong {
     border-color: var(--accent);
 }
 
-/* Chybová hláška */
 .login-error-msg {
     display: none;
     background-color: rgba(217, 43, 43, 0.1);

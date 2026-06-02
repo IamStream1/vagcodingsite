@@ -105,27 +105,20 @@ body {
     color: #fff;
 }
 
-/* Hero sekce s Audi RS3 na pozadí (image_476eeb.png) */
+/* Hero sekce - Vráceno zpět do čistého temného stylu */
 .hero {
-    position: relative;
-    min-height: 80vh; /* Zvětšená výška, aby auto skvěle vyniklo */
+    min-height: 65vh; 
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding-top: 100px; 
-    padding-bottom: 60px;
-    
-    /* Kombinace tmavého vrstveného přechodu pro zachování perfektní čitelnosti textu a fotky auta */
-    background: linear-gradient(to bottom, rgba(13, 15, 18, 0.9) 0%, rgba(13, 15, 18, 0.65) 50%, rgba(13, 15, 18, 0.95) 100%), 
-                url('../images/auto.png') no-repeat center center;
-    background-size: cover;
-    background-attachment: scroll;
+    padding-top: 85px; 
+    padding-bottom: 30px;
+    background: radial-gradient(circle at center, #1a1212 0%, var(--bg-dark) 100%);
+    position: relative;
 }
 
 .hero-content {
-    position: relative;
-    z-index: 2; /* Drží text bezpečně nad obrázkem */
     max-width: 850px;
     padding: 10px;
 }
@@ -160,8 +153,7 @@ h1 span {
 
 .hero p {
     font-size: 1.05rem;
-    color: var(--text-main); /* Změněno na světlejší pro dokonalý kontrast na fotce */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); /* Jemný stín, aby text nesplýval s detaily auta */
+    color: var(--text-muted);
     margin-bottom: 20px; 
     max-width: 620px;
     margin-left: auto;
@@ -187,7 +179,6 @@ h1 span {
 .btn-primary {
     background-color: var(--accent);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(217, 43, 43, 0.3); /* Dynamický odlesk tlačítek */
 }
 
 .btn-primary:hover {
@@ -196,14 +187,13 @@ h1 span {
 }
 
 .btn-secondary {
-    background-color: rgba(13, 15, 18, 0.6); /* Lehce zatmavené pozadí tlačítka pro čitelnost */
-    backdrop-filter: blur(4px);
+    background-color: transparent;
     border: 1px solid var(--border);
     color: var(--text-main);
 }
 
 .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
 /* Specs sekce */
@@ -389,14 +379,6 @@ td strong {
     .nav-links { display: none; }
     .container { padding: 0 15px; } /* Menší okraj na mobilu, aby zbyl prostor pro text */
     .contact-box { padding: 20px 10px; }
-    
-    .hero {
-        min-height: 60vh;
-        /* Na mobilu obrázek pozadí trochu ztmavíme pro ještě lepší čitelnost na malém displeji */
-        background: linear-gradient(to bottom, rgba(13, 15, 18, 0.95) 0%, rgba(13, 15, 18, 0.8) 50%, rgba(13, 15, 18, 0.95) 100%), 
-                    url('../images/auto.png') no-repeat center center;
-        background-size: cover;
-    }
 }
 
 /* OPRAVA POHYBU DO STRAN NA MOBILU */

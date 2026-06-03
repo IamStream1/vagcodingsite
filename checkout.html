@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokladna | VAG Coding & Diagnostika</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">VAG<span>Coding</span></a>
+            <div class="nav-links">
+                <a href="eshop.html" class="nav-btn">← Zpět do E-Shopu</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="contact-section" style="padding-top: 120px; min-height: 80vh;">
+        <div class="container">
+            <div class="contact-box" style="max-width: 600px; text-align: left;">
+                
+                <h2 class="section-title" style="text-align: center; margin-bottom: 20px;">Dokončení objednávky</h2>
+                
+                <div style="text-align: center; padding-bottom: 25px; border-bottom: 1px dashed var(--border); margin-bottom: 25px;">
+                    <h3 id="checkout-product" style="font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.2rem;">Načítání produktu...</h3>
+                    <p id="checkout-price" style="color: var(--accent); font-size: 1.8rem; font-weight: 700;">0 Kč</p>
+                    
+                    <div style="background: #fff; padding: 15px; border-radius: 8px; display: inline-block; margin-top: 15px;">
+                        <img id="checkout-qr" src="" alt="QR kód pro platbu" style="width: 200px; height: 200px; display: block;">
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 15px;">Naskenujte QR kód ve vaší bankovní aplikaci a platbu odešlete. Poté vyplňte formulář níže pro doručení.</p>
+                </div>
+
+                <form action="https://formsubmit.co/vaclavpernica126@gmail.com" method="POST">
+                    
+                    <input type="hidden" name="_subject" value="Nová objednávka z VAG E-Shopu!">
+                    <input type="hidden" name="Objednaný_produkt" id="form-product" value="">
+                    <input type="hidden" name="Částka" id="form-price" value="">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_next" value="https://vagcodingsite.vercel.app/eshop.html">
+
+                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">Jméno a příjmení</label>
+                    <input type="text" name="Jméno" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none;">
+
+                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">E-mail</label>
+                    <input type="email" name="Email" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none;">
+
+                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">Telefonní číslo</label>
+                    <input type="tel" name="Telefon" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none;">
+
+                    <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">Adresa pro doručení (Zásilkovna / domů)</label>
+                    <textarea name="Doručovací_údaje" rows="3" required style="width: 100%; padding: 12px; margin-bottom: 25px; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 14px;">Odeslat objednávku ke zpracování</button>
+                </form>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2026 Všechna práva vyhrazená.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Vytáhne informace z adresy (např. checkout.html?product=Kabel&price=1200...)
+        const params = new URLSearchParams(window.location.search);
+        const product = params.get('product') || 'Neznámý produkt';
+        const price = params.get('price') || '0';
+        const qrCode = params.get('qr') || '';
+
+        // Ukáže je zákazníkovi
+        document.getElementById('checkout-product').textContent = product;
+        document.getElementById('checkout-price').textContent = price + ' Kč';
+        if(qrCode) {
+            document.getElementById('checkout-qr').src = qrCode;
+        } else {
+            document.getElementById('checkout-qr').style.display = 'none';
+        }
+
+        // Schová je do formuláře, aby ti to přišlo na e-mail
+        document.getElementById('form-product').value = product;
+        document.getElementById('form-price').value = price + ' Kč';
+    </script>
+
+</body>
+</html>

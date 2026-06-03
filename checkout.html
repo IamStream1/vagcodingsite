@@ -8,9 +8,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Načtení knihovny pro automatické generování QR kódu -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
+    <!-- NAVIGACE -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">VAG<span>Coding</span></a>
@@ -20,30 +23,37 @@
         </div>
     </nav>
 
+    <!-- POKLADNA -->
     <section class="contact-section" style="padding-top: 120px; min-height: 80vh;">
         <div class="container">
             <div class="contact-box" style="max-width: 600px; text-align: left;">
                 
                 <h2 class="section-title" style="text-align: center; margin-bottom: 20px;">Dokončení objednávky</h2>
                 
+                <!-- SHRNUTÍ TOHO CO SI VYBRAL A AUTOMATICKÝ QR KÓD -->
                 <div style="text-align: center; padding-bottom: 25px; border-bottom: 1px dashed var(--border); margin-bottom: 25px;">
                     <h3 id="checkout-product" style="font-family: 'Orbitron', sans-serif; color: var(--text-main); font-size: 1.2rem;">Načítání produktu...</h3>
                     <p id="checkout-price" style="color: var(--accent); font-size: 1.8rem; font-weight: 700;">0 Kč</p>
                     
+                    <!-- Zde se vykreslí generovaný QR kód -->
                     <div style="background: #fff; padding: 15px; border-radius: 8px; display: inline-block; margin-top: 15px;">
-                        <img id="checkout-qr" src="" alt="QR kód pro platbu" style="width: 200px; height: 200px; display: block;">
+                        <div id="qrcode-container" style="width: 200px; height: 200px; margin: 0 auto;"></div>
                     </div>
                     <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 15px;">Naskenujte QR kód ve vaší bankovní aplikaci a platbu odešlete. Poté vyplňte formulář níže pro doručení.</p>
                 </div>
 
+                <!-- FORMULÁŘ KTERÝ TI PŘIJDE NA EMAIL -->
                 <form action="https://formsubmit.co/vaclavpernica126@gmail.com" method="POST">
                     
+                    <!-- Skrytá data pro Formsubmit -->
                     <input type="hidden" name="_subject" value="Nová objednávka z VAG E-Shopu!">
                     <input type="hidden" name="Objednaný_produkt" id="form-product" value="">
                     <input type="hidden" name="Částka" id="form-price" value="">
                     <input type="hidden" name="_captcha" value="false">
                     <input type="hidden" name="_template" value="table">
-                    <input type="hidden" name="_next" value="https://vagcoding.vercel.app/success.html">
+                    
+                    <!-- POZOR: ZDE VLOŽ SVOU PŘESNOU ADRESU Z VERCELU (např. https://moje-stranka.vercel.app/success.html) -->
+                    <input type="hidden" name="_next" value="vagcoding.vercel.app/success.html">
 
                     <label style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted);">Jméno a příjmení</label>
                     <input type="text" name="Jméno" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: var(--bg-dark); border: 1px solid var(--border); color: #fff; border-radius: 4px; outline: none;">
@@ -64,31 +74,49 @@
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="main-footer">
         <div class="container">
             <p>© 2026 Všechna práva vyhrazená.</p>
         </div>
     </footer>
 
+    <!-- SKRIPT PRO AUTOMATICKOU TVORBU QR KÓDU DLE CENY A PRODUKTU -->
     <script>
-        // Vytáhne informace z adresy (např. checkout.html?product=Kabel&price=1200...)
+        // --- ZDE MUSÍŠ ZADAT SVŮJ SKUTEČNÝ IBAN PRO PŘÍJEM PLATBY ---
+        const MUJ_IBAN = "CZ7906000000000248036517"; 
+        
+        // Načtení dat z odkazu
         const params = new URLSearchParams(window.location.search);
         const product = params.get('product') || 'Neznámý produkt';
-        const price = params.get('price') || '0';
-        const qrCode = params.get('qr') || '';
+        const rawPrice = params.get('price') || '0';
 
-        // Ukáže je zákazníkovi
+        // Převedení ceny do formátu pro banku (např. "1200" na "1200.00")
+        const cleanPrice = parseFloat(rawPrice.replace(/\s/g, '').replace(',', '.')).toFixed(2);
+
+        // Zobrazení zákazníkovi
         document.getElementById('checkout-product').textContent = product;
-        document.getElementById('checkout-price').textContent = price + ' Kč';
-        if(qrCode) {
-            document.getElementById('checkout-qr').src = qrCode;
-        } else {
-            document.getElementById('checkout-qr').style.display = 'none';
-        }
+        document.getElementById('checkout-price').textContent = rawPrice + ' Kč';
 
-        // Schová je do formuláře, aby ti to přišlo na e-mail
+        // Uložení do formuláře pro e-mail
         document.getElementById('form-product').value = product;
-        document.getElementById('form-price').value = price + ' Kč';
+        document.getElementById('form-price').value = rawPrice + ' Kč';
+
+        // Odstranění diakritiky z názvu produktu, aby s tím neměly staré bankovní aplikace problém
+        const safeMessage = product.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 60);
+
+        // Oficiální formát SPAYD (Short Payment Descriptor) pro české QR platby
+        const spaydString = `SPD*1.0*ACC:${MUJ_IBAN}*AM:${cleanPrice}*CC:CZK*MSG:Eshop ${safeMessage}`;
+
+        // Vykreslení samotného QR kódu do připraveného bloku
+        new QRCode(document.getElementById("qrcode-container"), {
+            text: spaydString,
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.M
+        });
     </script>
 
 </body>

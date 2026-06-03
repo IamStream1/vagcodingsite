@@ -11,6 +11,7 @@
 </head>
 <body>
 
+    <!-- NAVIGACE -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">VAG<span>Coding</span></a>
@@ -20,6 +21,7 @@
         </div>
     </nav>
 
+    <!-- E-SHOP HLAVIČKA -->
     <header class="hero" style="min-height: 35vh; padding-top: 120px;">
         <div class="hero-content">
             <h1>Nabídka <span>vybavení</span></h1>
@@ -27,22 +29,26 @@
         </div>
     </header>
 
+    <!-- PRODUKTY MŘÍŽKA -->
     <section class="services-section" style="background-color: var(--bg-dark);">
         <div class="container">
             <div class="product-grid">
 
+                <!-- 🛒 PRODUKT 1 -->
                 <div class="product-card">
                     <img src="images/kabel.jpg" alt="Diagnostický kabel">
                     <div class="product-info">
-                        <h3>VCDS Diagnostický kabel</h3>
+                        <h3>VCDS Diagnostický kabel (Klon)</h3>
                         <p class="product-desc">Plně funkční kabel pro platformu VAG. Podpora vozů do roku 2023. Ideální pro domácí diagnostiku a základní kódování.</p>
                         <div class="product-bottom">
                             <span class="product-price">1 200 Kč</span>
-                            <a href="checkout.html?product=VCDS+Diagnostický+kabel&price=1200&qr=images/qr-1200.png" class="btn btn-primary">Koupit</a>
+                            <!-- Tlačítko teď posílá už jen název a cenu -->
+                            <a href="checkout.html?product=VCDS+Diagnostický+kabel&price=1200" class="btn btn-primary">Koupit</a>
                         </div>
                     </div>
                 </div>
 
+                <!-- 🛒 PRODUKT 2 -->
                 <div class="product-card">
                     <img src="images/led.jpg" alt="LED osvětlení">
                     <div class="product-info">
@@ -50,7 +56,8 @@
                         <p class="product-desc">Kompletní sada CAN-BUS nehlásící chybu. Čistě bílé světlo 6000K pro stropní lampičky, kufr a přihrádku.</p>
                         <div class="product-bottom">
                             <span class="product-price">650 Kč</span>
-                            <a href="checkout.html?product=Sada+LED+žárovek&price=650&qr=images/qr-650.png" class="btn btn-primary">Koupit</a>
+                            <!-- Tlačítko teď posílá už jen název a cenu -->
+                            <a href="checkout.html?product=Sada+LED+žárovek&price=650" class="btn btn-primary">Koupit</a>
                         </div>
                     </div>
                 </div>
@@ -59,6 +66,7 @@
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="main-footer">
         <div class="container">
             <p>© 2026 Všechna práva vyhrazená.</p>

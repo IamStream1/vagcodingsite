@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Shop | VAG Coding & Diagnostika</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">VAG<span>Coding</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">← Zpět na hlavní web</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 35vh; padding-top: 120px;">
+        <div class="hero-content">
+            <h1>Nabídka <span>vybavení</span></h1>
+            <p>Diagnostické kabely, příslušenství a doplňky pro vozy VAG.</p>
+        </div>
+    </header>
+
+    <section class="services-section" style="background-color: var(--bg-dark);">
+        <div class="container">
+            <div class="product-grid">
+
+                <div class="product-card">
+                    <img src="images/kabel.jpg" alt="Diagnostický kabel">
+                    <div class="product-info">
+                        <h3>VCDS Diagnostický kabel (Klon)</h3>
+                        <p class="product-desc">Plně funkční kabel pro platformu VAG. Podpora vozů do roku 2023. Ideální pro domácí diagnostiku a základní kódování.</p>
+                        <div class="product-bottom">
+                            <span class="product-price">1 200 Kč</span>
+                            <button class="btn btn-primary" onclick="openPaymentModal('VCDS Diagnostický kabel', '1 200', 'images/qr-1200.png')">Koupit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <img src="images/led.jpg" alt="LED osvětlení">
+                    <div class="product-info">
+                        <h3>Sada LED žárovek interiéru</h3>
+                        <p class="product-desc">Kompletní sada CAN-BUS nehlásící chybu. Čistě bílé světlo 6000K pro stropní lampičky, kufr a přihrádku.</p>
+                        <div class="product-bottom">
+                            <span class="product-price">650 Kč</span>
+                            <button class="btn btn-primary" onclick="openPaymentModal('Sada LED žárovek', '650', 'images/qr-650.png')">Koupit</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div id="paymentModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 400px;">
+            <span class="modal-close" onclick="closePaymentModal()">&times;</span>
+            <h3 class="modal-title" id="payTitle">Platba za produkt</h3>
+            
+            <div style="background-color: #fff; padding: 15px; border-radius: 8px; margin: 20px auto; width: fit-content;">
+                <img id="payQR" src="" alt="QR Platba" style="width: 200px; height: 200px; display: block;">
+            </div>
+            
+            <p style="font-size: 1.4rem; font-weight: bold; color: var(--accent); margin-bottom: 10px;" id="payPrice">0 Kč</p>
+            
+            <div class="notice-card" style="text-align: left; margin-top: 15px;">
+                <span class="notice-icon">⚠️</span>
+                <span class="notice-text">Otevřete své mobilní bankovnictví a naskenujte QR kód. <strong>Do zprávy pro příjemce napište Váš e-mail nebo telefon</strong>, abych Vás mohl kontaktovat ohledně doručení.</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>© 2026 Všechna práva vyhrazená.</p>
+        </div>
+    </footer>
+
+    <script>
+        function openPaymentModal(productName, price, qrImageSrc) {
+            document.getElementById('payTitle').innerText = productName;
+            document.getElementById('payPrice').innerText = price + ' Kč';
+            document.getElementById('payQR').src = qrImageSrc;
+            document.getElementById('paymentModal').classList.add('show-modal');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show-modal');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target === modal) {
+                closePaymentModal();
+            }
+        }
+    </script>
+</body>
+</html>

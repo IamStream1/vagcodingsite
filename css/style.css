@@ -576,3 +576,61 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(18px);
 }
+/* --- MODÁLNÍ OKNA (POPUPY PRO E-SHOP) --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.show-modal {
+    display: flex;
+}
+
+.modal-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: var(--accent);
+}
+
+.product-detail-img {
+    width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    background: #080a0c;
+    border: 1px solid var(--border);
+}
+
+/* Interaktivita karet */
+.clickable-card {
+    cursor: pointer;
+}
+.clickable-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+}

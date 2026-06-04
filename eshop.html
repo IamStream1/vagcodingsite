@@ -100,7 +100,9 @@
         ];
 
         let products = JSON.parse(localStorage.getItem('vag_products'));
-        if (!products || products.length === 0) {
+        
+        // Zabráníme tomu, aby se produkty vracely, když je schválně smažeš
+        if (!products) { 
             products = defaultProducts;
             saveProducts();
         }

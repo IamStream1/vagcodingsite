@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VAG Coding & Diagnostika | Profesionální úpravy vozidel</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- HERO SECTION -->
     <header class="hero">
         <div class="hero-content">
             <h1>Kódování funkcí pro vozy skupin <span>Audi, VW, Seat/Cupra, Skoda</span></h1>
@@ -26,7 +24,6 @@
         </div>
     </header>
 
-    <!-- STATS / PŘEDNOSTI -->
     <section id="o-nas" class="specs-section">
         <div class="container">
             <div class="specs-grid">
@@ -49,7 +46,6 @@
         </div>
     </section>
 
-    <!-- SLUŽBY / ZKRÁCENÁ ŠIROKÁ TABULKA -->
     <section id="sluzby" class="services-section">
         <div class="container">
             <h2 class="section-title">Co všechno lze aktivovat?</h2>
@@ -90,7 +86,62 @@
         </div> 
     </section>
 
-    <!-- KONTAKT -->
+    <section id="nase-prace" class="services-section" style="background-color: var(--bg-dark); border-top: 1px solid var(--border);">
+        <div class="container">
+            <h2 class="section-title">Naše práce</h2>
+            <p class="section-subtitle">Ukázky kódování, diagnostiky a úprav přímo z praxe.</p>
+
+            <div class="carousel-container">
+                <div class="carousel-arrow arrow-left" onclick="scrollCarousel(-1)">❮</div>
+                <div class="carousel-track" id="public-gallery-track">
+                    </div>
+                <div class="carousel-arrow arrow-right" onclick="scrollCarousel(1)">❯</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="admin-gallery-dashboard" class="admin-section" style="display: none; border-bottom: 1px solid var(--accent); background-color: #080a0c;">
+        <div class="container">
+            <div class="admin-header">
+                <h2 class="section-title" style="margin: 0; font-size: 1.8rem;">⚙️ Správa galerie</h2>
+                <button onclick="logoutGalleryAdmin()" class="btn btn-secondary">🚪 Odhlásit se</button>
+            </div>
+
+            <div class="admin-dashboard-grid" style="grid-template-columns: 1fr;">
+                <div class="admin-card add-card" style="max-width: 600px; margin: 0 auto 30px;">
+                    <div class="card-icon">➕</div>
+                    <h3>Přidat novou ukázku</h3>
+                    <form onsubmit="handleAddMedia(event)">
+                        <input type="text" id="add-media-title" class="admin-input" placeholder="Název (např. Aktivace ručiček)" required>
+                        
+                        <label class="admin-label">Typ média:</label>
+                        <select id="add-media-type" class="admin-input" onchange="toggleMediaInput()">
+                            <option value="image">Fotografie (Nahrát soubor)</option>
+                            <option value="video">Video (Vložit odkaz - YouTube/MP4)</option>
+                        </select>
+
+                        <div id="input-image-box">
+                            <label class="admin-label">Vyberte fotografii:</label>
+                            <input type="file" id="add-media-file" class="admin-input" accept="image/*">
+                        </div>
+
+                        <div id="input-video-box" style="display: none;">
+                            <label class="admin-label">URL odkaz na video:</label>
+                            <input type="url" id="add-media-url" class="admin-input" placeholder="https://...">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Nahrát do galerie</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 15px; color: var(--accent);">Pořadí a úpravy (Přetáhněte myší pro změnu pořadí)</h3>
+                    <div id="admin-gallery-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="kontakt" class="contact-section">
         <div class="container">
             <div class="contact-box">
@@ -111,7 +162,6 @@
                         <span class="card-value"><a href="mailto:info@vagcoding.cz">info@vagcoding.cz</a></span>
                     </div>
                     
-                    <!-- PROPOJENÁ KARTA PODOMÍ NA GOOGLE MAPY -->
                     <div class="contact-card">
                         <span class="card-label">📍</span>
                         <span class="card-value"><a href="https://www.google.com/maps/dir/?api=1&destination=Podomí" target="_blank">Podomí</a></span>
@@ -126,12 +176,312 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <div id="lightboxModal" class="modal-overlay" style="background: rgba(0,0,0,0.95);">
+        <span class="modal-close" onclick="closeLightbox()" style="z-index: 2010;">&times;</span>
+        <div class="lightbox-nav lightbox-prev" onclick="changeLightboxMedia(-1)">❮</div>
+        
+        <div class="lightbox-content" id="lightbox-media-container" style="display: flex; flex-direction: column;">
+            </div>
+        
+        <div class="lightbox-nav lightbox-next" onclick="changeLightboxMedia(1)">❯</div>
+    </div>
+
+    <div id="adminLoginModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 350px; padding: 40px 25px;">
+            <span class="modal-close" onclick="closeAdminLoginModal()">&times;</span>
+            <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">🔒 Admin Login</h3>
+            <div id="login-error" style="color: var(--accent); display: none; margin-bottom: 10px; font-size: 0.9rem; text-align: center;">Nesprávné jméno nebo heslo.</div>
+            <form onsubmit="handleAdminLogin(event)">
+                <input type="text" id="admin-user" class="admin-input" placeholder="Uživatelské jméno" required autocomplete="username">
+                <input type="password" id="admin-pass" class="admin-input" placeholder="Heslo" required autocomplete="current-password">
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Přihlásit se</button>
+            </form>
+        </div>
+    </div>
+
     <footer class="main-footer">
-        <div class="container">
-            <p>&copy; 2026 Všechna práva vyhrazená.</p>
+        <div class="container" style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+            <p style="margin: 0;">© 2026 Všechna práva vyhrazená.</p>
+            <span onclick="openAdminLoginModal()" style="cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">🔒 Admin Login</span>
         </div>
     </footer>
+
+    <script>
+        // --- 1. DATA A PAMĚŤ ---
+        const defaultGallery = [
+            { id: 101, title: "Změna barev ambientního osvětlení", type: "image", src: "images/auto.png", visible: true },
+            { id: 102, title: "Diagnostika Škoda Rapid 1.2 TSI (CBZB)", type: "image", src: "images/kabel.jpg", visible: true }
+        ];
+
+        let galleryData = JSON.parse(localStorage.getItem('vag_gallery'));
+        // Zabraňuje nechtěnému navrácení výchozích dat, pokud byly smazány
+        if (!galleryData) {
+            galleryData = defaultGallery;
+            saveGallery();
+        }
+
+        function saveGallery() { localStorage.setItem('vag_gallery', JSON.stringify(galleryData)); }
+
+        // --- 2. VYKRESLENÍ GALERIE (VEŘEJNÁ ČÁST) ---
+        function renderPublicGallery() {
+            const track = document.getElementById('public-gallery-track');
+            if(!track) return;
+            track.innerHTML = '';
+            
+            const visibleItems = galleryData.filter(item => item.visible);
+            
+            if (visibleItems.length === 0) {
+                track.innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center;">Galerie je momentálně prázdná.</p>';
+                return;
+            }
+
+            visibleItems.forEach((item, index) => {
+                const isVideo = item.type === 'video';
+                const icon = isVideo ? '<div class="play-icon">▶</div>' : '';
+                const mediaTag = isVideo 
+                    ? `<video src="${item.src}#t=0.1" preload="metadata" muted playsinline></video>` 
+                    : `<img src="${item.src}" alt="${item.title}">`;
+
+                track.innerHTML += `
+                    <div class="carousel-item" onclick="openLightbox(${index})">
+                        ${mediaTag}
+                        ${icon}
+                        <div class="item-title-overlay">${item.title}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Posouvání šipkami v carouselu
+        function scrollCarousel(direction) {
+            const track = document.getElementById('public-gallery-track');
+            const scrollAmount = 340; // Šířka karty + mezera
+            track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+
+        // --- 3. LIGHTBOX (FULLSCREEN) ---
+        let currentLightboxIndex = 0;
+        let lightboxItems = [];
+
+        function openLightbox(index) {
+            lightboxItems = galleryData.filter(item => item.visible);
+            currentLightboxIndex = index;
+            updateLightboxContent();
+            document.getElementById('lightboxModal').classList.add('show-modal');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('show-modal');
+            const container = document.getElementById('lightbox-media-container');
+            container.innerHTML = ''; // Zastaví přehrávání videa při zavření
+        }
+
+        function changeLightboxMedia(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = lightboxItems.length - 1;
+            if (currentLightboxIndex >= lightboxItems.length) currentLightboxIndex = 0;
+            updateLightboxContent();
+        }
+
+        function updateLightboxContent() {
+            const item = lightboxItems[currentLightboxIndex];
+            const container = document.getElementById('lightbox-media-container');
+            
+            if (item.type === 'video') {
+                container.innerHTML = `
+                    <video src="${item.src}" controls autoplay class="lightbox-media"></video>
+                    <div class="lightbox-title">${item.title}</div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <img src="${item.src}" class="lightbox-media" alt="${item.title}">
+                    <div class="lightbox-title">${item.title}</div>
+                `;
+            }
+        }
+
+        // --- 4. ADMINISTRACE (LOGIN A DASHBOARD) ---
+        function checkAdmin() {
+            const isAdmin = sessionStorage.getItem('vag_gallery_admin') === 'true';
+            const adminSection = document.getElementById('admin-gallery-dashboard');
+            if(adminSection) adminSection.style.display = isAdmin ? 'block' : 'none';
+            if (isAdmin) renderAdminGallery();
+        }
+
+        function openAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('show-modal');
+            document.getElementById('login-error').style.display = 'none';
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.remove('show-modal');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+
+            if (user === 'admin' && pass === 'admin1212') {
+                sessionStorage.setItem('vag_gallery_admin', 'true');
+                document.getElementById('admin-pass').value = '';
+                closeAdminLoginModal();
+                checkAdmin();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logoutGalleryAdmin() {
+            sessionStorage.removeItem('vag_gallery_admin');
+            checkAdmin();
+        }
+
+        function toggleMediaInput() {
+            const type = document.getElementById('add-media-type').value;
+            document.getElementById('input-image-box').style.display = type === 'image' ? 'block' : 'none';
+            document.getElementById('input-video-box').style.display = type === 'video' ? 'block' : 'none';
+        }
+
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function handleAddMedia(e) {
+            e.preventDefault();
+            const title = document.getElementById('add-media-title').value;
+            const type = document.getElementById('add-media-type').value;
+            let src = '';
+
+            if (type === 'image') {
+                const file = document.getElementById('add-media-file').files[0];
+                if (!file) return alert('Vyberte fotografii!');
+                if (file.size > 2500000) return alert('Fotka je moc velká! Vyberte soubor do 2.5MB.');
+                src = await getBase64(file);
+            } else {
+                src = document.getElementById('add-media-url').value;
+                if (!src) return alert('Vložte URL videa!');
+            }
+
+            const newItem = { id: Date.now(), title, type, src, visible: true };
+            galleryData.unshift(newItem); // Přidá jako první v pořadí
+            saveGallery();
+            e.target.reset();
+            toggleMediaInput();
+            renderPublicGallery();
+            renderAdminGallery();
+        }
+
+        function deleteMedia(id) {
+            if(confirm("Opravdu smazat tuto ukázku?")) {
+                galleryData = galleryData.filter(i => i.id !== id);
+                saveGallery();
+                renderPublicGallery();
+                renderAdminGallery();
+            }
+        }
+
+        function toggleMediaVisibility(id) {
+            const item = galleryData.find(i => i.id === id);
+            if(item) {
+                item.visible = !item.visible;
+                saveGallery();
+                renderPublicGallery();
+                renderAdminGallery();
+            }
+        }
+
+        // --- 5. DRAG AND DROP (ŘAZENÍ V ADMINU) ---
+        let draggedItemId = null;
+
+        function renderAdminGallery() {
+            const list = document.getElementById('admin-gallery-list');
+            list.innerHTML = '';
+            
+            galleryData.forEach(item => {
+                const icon = item.type === 'video' ? '🎬' : '📸';
+                const eyeColor = item.visible ? 'var(--accent)' : '#555';
+                const eyeText = item.visible ? 'Viditelné' : 'Skryté';
+
+                list.innerHTML += `
+                    <div class="admin-gallery-row" draggable="true" 
+                         ondragstart="dragStart(event, ${item.id})" 
+                         ondragover="dragOver(event)" 
+                         ondragleave="dragLeave(event)" 
+                         ondrop="drop(event, ${item.id})">
+                        
+                        <div style="display:flex; align-items:center; gap:15px; pointer-events:none;">
+                            <span style="cursor:grab; font-size:1.2rem;">☰</span>
+                            <span>${icon}</span>
+                            <strong style="color:var(--text-main);">${item.title}</strong>
+                        </div>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="toggleMediaVisibility(${item.id})" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; color:${eyeColor}; border-color:${eyeColor};">${eyeText}</button>
+                            <button onclick="deleteMedia(${item.id})" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;">Smazat</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function dragStart(e, id) {
+            draggedItemId = id;
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function dragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        function drop(e, targetId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (draggedItemId === targetId) return;
+
+            const fromIndex = galleryData.findIndex(i => i.id === draggedItemId);
+            const toIndex = galleryData.findIndex(i => i.id === targetId);
+            
+            const [movedItem] = galleryData.splice(fromIndex, 1);
+            galleryData.splice(toIndex, 0, movedItem);
+            
+            saveGallery();
+            renderPublicGallery();
+            renderAdminGallery();
+        }
+
+        // --- 6. GLOBÁLNÍ EVENTS (Klávesy a kliknutí) ---
+        window.onclick = function(event) {
+            const adminModal = document.getElementById('adminLoginModal');
+            const lightbox = document.getElementById('lightboxModal');
+            if (event.target === adminModal) closeAdminLoginModal();
+            if (event.target === lightbox) closeLightbox();
+        }
+
+        // Podpora pro Esc a šipky
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                closeAdminLoginModal();
+            }
+            if (document.getElementById('lightboxModal').classList.contains('show-modal')) {
+                if (e.key === 'ArrowRight') changeLightboxMedia(1);
+                if (e.key === 'ArrowLeft') changeLightboxMedia(-1);
+            }
+        });
+
+        // --- INICIALIZACE PO NAČTENÍ ---
+        renderPublicGallery();
+        checkAdmin();
+    </script>
 
 </body>
 </html>

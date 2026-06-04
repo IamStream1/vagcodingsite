@@ -108,29 +108,31 @@
             </div>
 
             <div class="admin-dashboard-grid" style="grid-template-columns: 1fr;">
+                
                 <div class="admin-card add-card" style="max-width: 600px; margin: 0 auto 30px;">
                     <div class="card-icon">➕</div>
                     <h3>Přidat novou ukázku</h3>
                     <form onsubmit="handleAddMedia(event)">
                         <input type="text" id="add-media-title" class="admin-input" placeholder="Název (např. Aktivace ručiček)" required>
                         
-                        <label class="admin-label">Typ média:</label>
+                        <label class="admin-label">Zdroj média:</label>
                         <select id="add-media-type" class="admin-input" onchange="toggleMediaInput()">
-                            <option value="image">Fotografie (Nahrát soubor)</option>
-                            <option value="video">Video (Vložit odkaz - YouTube/MP4)</option>
+                            <option value="file">Nahrát ze zařízení (Fotka nebo krátké video do 2.5MB)</option>
+                            <option value="link">Vložit odkaz (YouTube nebo Google Disk)</option>
                         </select>
 
-                        <div id="input-image-box">
-                            <label class="admin-label">Vyberte fotografii:</label>
-                            <input type="file" id="add-media-file" class="admin-input" accept="image/*">
+                        <div id="input-file-box">
+                            <label class="admin-label">Vyberte soubor:</label>
+                            <input type="file" id="add-media-file" class="admin-input" accept="image/*, video/mp4, video/webm">
                         </div>
 
-                        <div id="input-video-box" style="display: none;">
-                            <label class="admin-label">URL odkaz na video:</label>
-                            <input type="url" id="add-media-url" class="admin-input" placeholder="https://...">
+                        <div id="input-link-box" style="display: none;">
+                            <label class="admin-label">Odkaz (YouTube / Shorts / Google Disk):</label>
+                            <input type="url" id="add-media-url" class="admin-input" placeholder="https://www.youtube.com/watch?v=...">
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Při použití YouTube zkontrolujte, že video není nastavené jako "Soukromé" (může být "Neveřejné"). U Google Disku musí mít odkaz práva "Všichni, kdo mají odkaz".</p>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Nahrát do galerie</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Přidat do galerie</button>
                     </form>
                 </div>
 
@@ -177,10 +179,10 @@
     </section>
 
     <div id="lightboxModal" class="modal-overlay" style="background: rgba(0,0,0,0.95);">
-        <span class="modal-close" onclick="closeLightbox()" style="z-index: 2010;">&times;</span>
+        <span class="modal-close" onclick="closeLightbox()" style="z-index: 2010;">×</span>
         <div class="lightbox-nav lightbox-prev" onclick="changeLightboxMedia(-1)">❮</div>
         
-        <div class="lightbox-content" id="lightbox-media-container" style="display: flex; flex-direction: column;">
+        <div class="lightbox-content" id="lightbox-media-container">
             </div>
         
         <div class="lightbox-nav lightbox-next" onclick="changeLightboxMedia(1)">❯</div>
@@ -188,7 +190,7 @@
 
     <div id="adminLoginModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 350px; padding: 40px 25px;">
-            <span class="modal-close" onclick="closeAdminLoginModal()">&times;</span>
+            <span class="modal-close" onclick="closeAdminLoginModal()">×</span>
             <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">🔒 Admin Login</h3>
             <div id="login-error" style="color: var(--accent); display: none; margin-bottom: 10px; font-size: 0.9rem; text-align: center;">Nesprávné jméno nebo heslo.</div>
             <form onsubmit="handleAdminLogin(event)">
@@ -220,7 +222,39 @@
             saveGallery();
         }
 
-        function saveGallery() { localStorage.setItem('vag_gallery', JSON.stringify(galleryData)); }
+        // Uloží do paměti s bezpečnostní pojistkou proti přeplnění Limitů prohlížeče
+        function saveGallery() { 
+            try {
+                localStorage.setItem('vag_gallery', JSON.stringify(galleryData)); 
+                return true;
+            } catch (e) {
+                console.error("Local storage je plný", e);
+                return false;
+            }
+        }
+
+        // --- DEKODÉR ODKAZŮ PRO YOUTUBE A GOOGLE DISK ---
+        function getEmbedUrl(url) {
+            try {
+                if (url.includes('youtube.com/watch')) {
+                    const params = new URLSearchParams(new URL(url).search);
+                    return `https://www.youtube.com/embed/${params.get('v')}`;
+                }
+                if (url.includes('youtu.be/')) {
+                    const id = url.split('youtu.be/')[1].split('?')[0];
+                    return `https://www.youtube.com/embed/${id}`;
+                }
+                if (url.includes('youtube.com/shorts/')) {
+                    const id = url.split('/shorts/')[1].split('?')[0];
+                    return `https://www.youtube.com/embed/${id}`;
+                }
+                if (url.includes('drive.google.com/file/d/')) {
+                    const id = url.split('/d/')[1].split('/')[0];
+                    return `https://drive.google.com/file/d/${id}/preview`;
+                }
+            } catch(e) { console.error("Chyba při parsování URL", e); }
+            return url;
+        }
 
         // --- 2. VYKRESLENÍ GALERIE (VEŘEJNÁ ČÁST) ---
         function renderPublicGallery() {
@@ -236,11 +270,23 @@
             }
 
             visibleItems.forEach((item, index) => {
-                const isVideo = item.type === 'video';
-                const icon = isVideo ? '<div class="play-icon">▶</div>' : '';
-                const mediaTag = isVideo 
-                    ? `<video src="${item.src}#t=0.1" preload="metadata" muted playsinline></video>` 
-                    : `<img src="${item.src}" alt="${item.title}">`;
+                let mediaTag = '';
+                let icon = '';
+
+                // Pokud je to odkaz z YouTube nebo Disku
+                if (item.type === 'video_link') {
+                    mediaTag = `<iframe src="${getEmbedUrl(item.src)}" style="width:100%; height:100%; pointer-events:none;" frameborder="0"></iframe>`;
+                    icon = '<div class="play-icon">▶</div>';
+                } 
+                // Pokud je to přímo nahrané video z PC
+                else if (item.type === 'video_file' || item.type === 'video') {
+                    mediaTag = `<video src="${item.src}#t=0.1" preload="metadata" muted playsinline></video>`;
+                    icon = '<div class="play-icon">▶</div>';
+                } 
+                // Klasická fotka
+                else {
+                    mediaTag = `<img src="${item.src}" alt="${item.title}">`;
+                }
 
                 track.innerHTML += `
                     <div class="carousel-item" onclick="openLightbox(${index})">
@@ -255,7 +301,7 @@
         // Posouvání šipkami v carouselu
         function scrollCarousel(direction) {
             const track = document.getElementById('public-gallery-track');
-            const scrollAmount = 340; // Šířka karty + mezera
+            const scrollAmount = 340; 
             track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
         }
 
@@ -287,7 +333,12 @@
             const item = lightboxItems[currentLightboxIndex];
             const container = document.getElementById('lightbox-media-container');
             
-            if (item.type === 'video') {
+            if (item.type === 'video_link') {
+                container.innerHTML = `
+                    <iframe src="${getEmbedUrl(item.src)}" class="lightbox-media" style="width: 100%; min-height: 50vh;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <div class="lightbox-title">${item.title}</div>
+                `;
+            } else if (item.type === 'video_file' || item.type === 'video') {
                 container.innerHTML = `
                     <video src="${item.src}" controls autoplay class="lightbox-media"></video>
                     <div class="lightbox-title">${item.title}</div>
@@ -339,8 +390,8 @@
 
         function toggleMediaInput() {
             const type = document.getElementById('add-media-type').value;
-            document.getElementById('input-image-box').style.display = type === 'image' ? 'block' : 'none';
-            document.getElementById('input-video-box').style.display = type === 'video' ? 'block' : 'none';
+            document.getElementById('input-file-box').style.display = type === 'file' ? 'block' : 'none';
+            document.getElementById('input-link-box').style.display = type === 'link' ? 'block' : 'none';
         }
 
         function getBase64(file) {
@@ -355,24 +406,36 @@
         async function handleAddMedia(e) {
             e.preventDefault();
             const title = document.getElementById('add-media-title').value;
-            const type = document.getElementById('add-media-type').value;
+            const sourceType = document.getElementById('add-media-type').value;
+            
+            let type = 'image';
             let src = '';
 
-            if (type === 'image') {
+            // Rozdělení logiky: buď fotka/video z PC nebo Odkaz
+            if (sourceType === 'file') {
                 const file = document.getElementById('add-media-file').files[0];
-                if (!file) return alert('Vyberte fotografii!');
-                if (file.size > 2500000) return alert('Fotka je moc velká! Vyberte soubor do 2.5MB.');
+                if (!file) return alert('Vyberte soubor!');
+                if (file.size > 2500000) return alert('Soubor je moc velký! Maximum je 2.5 MB.');
+                
+                type = file.type.startsWith('video/') ? 'video_file' : 'image';
                 src = await getBase64(file);
             } else {
                 src = document.getElementById('add-media-url').value;
-                if (!src) return alert('Vložte URL videa!');
+                if (!src) return alert('Vložte URL odkaz!');
+                type = 'video_link';
             }
 
             const newItem = { id: Date.now(), title, type, src, visible: true };
             galleryData.unshift(newItem); // Přidá jako první v pořadí
-            saveGallery();
+            
+            const success = saveGallery();
+            if (!success) {
+                galleryData.shift(); // Smaže poslední pokus, pokud nevyšel kvůli plné paměti
+                return alert('Chyba: Paměť prohlížeče je plná! Smažte prosím starší videa nebo fotky.');
+            }
+
             e.target.reset();
-            toggleMediaInput();
+            toggleMediaInput(); // reset zobrazení políček
             renderPublicGallery();
             renderAdminGallery();
         }
@@ -404,7 +467,7 @@
             list.innerHTML = '';
             
             galleryData.forEach(item => {
-                const icon = item.type === 'video' ? '🎬' : '📸';
+                const icon = (item.type === 'video_link' || item.type === 'video_file' || item.type === 'video') ? '🎬' : '📸';
                 const eyeColor = item.visible ? 'var(--accent)' : '#555';
                 const eyeText = item.visible ? 'Viditelné' : 'Skryté';
 

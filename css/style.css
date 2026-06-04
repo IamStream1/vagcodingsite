@@ -22,12 +22,16 @@ html {
     scroll-behavior: smooth;
 }
 
+/* OPRAVA: Přidán flexbox pro přilepení patičky dolů */
 body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     line-height: 1.5;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* ROZTAŽENÍ STRÁNKY */
@@ -346,13 +350,15 @@ td strong {
     text-decoration: none;
 }
 
-/* Footer */
+/* --- FOOTER (OPRAVENO: Tenký a přilepený dolů) --- */
 .main-footer {
-    padding: 20px 0;
+    padding: 10px 0; /* Zmenšené pro dokonalý fit s navigací */
     border-top: 1px solid var(--border);
     text-align: center;
     font-size: 0.8rem;
     color: var(--text-muted);
+    margin-top: auto; /* Zaručí přilepení patičky ke spodnímu okraji prohlížeče */
+    width: 100%;
 }
 
 /* PLNÁ RESPONSIVITA PRO TELEFONY */
@@ -361,12 +367,6 @@ td strong {
     .nav-links { display: none; }
     .container { padding: 0 15px; }
     .contact-box { padding: 20px 10px; }
-}
-
-html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-    position: relative;
 }
 
 @media (max-width: 768px) {

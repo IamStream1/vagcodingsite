@@ -92,7 +92,7 @@
             <div class="carousel-container">
                 <div class="carousel-arrow arrow-left" onclick="scrollCarousel(-1)">❮</div>
                 <div class="carousel-track" id="public-gallery-track">
-                    </div>
+                </div>
                 <div class="carousel-arrow arrow-right" onclick="scrollCarousel(1)">❯</div>
             </div>
         </div>
@@ -113,24 +113,10 @@
                     <form onsubmit="handleAddMedia(event)">
                         <input type="text" id="add-media-title" class="admin-input" placeholder="Název (např. Aktivace ručiček)" required>
                         
-                        <label class="admin-label">Zdroj média:</label>
-                        <select id="add-media-type" class="admin-input" onchange="toggleMediaInput()">
-                            <option value="file">Nahrát ze zařízení (Fotka nebo krátké video do 2.5MB)</option>
-                            <option value="link">Vložit odkaz (YouTube nebo Google Disk)</option>
-                        </select>
+                        <label class="admin-label">Vyberte fotografii nebo video (až 50 MB):</label>
+                        <input type="file" id="add-media-file" class="admin-input" accept="image/*, video/*" required>
 
-                        <div id="input-file-box">
-                            <label class="admin-label">Vyberte soubor:</label>
-                            <input type="file" id="add-media-file" class="admin-input" accept="image/*, video/mp4, video/webm">
-                        </div>
-
-                        <div id="input-link-box" style="display: none;">
-                            <label class="admin-label">Odkaz (YouTube / Shorts / Google Disk):</label>
-                            <input type="url" id="add-media-url" class="admin-input" placeholder="https://www.youtube.com/watch?v=...">
-                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Při použití YouTube zkontrolujte, že video není nastavené jako "Soukromé" (může být "Neveřejné"). U Google Disku musí mít odkaz práva "Všichni, kdo mají odkaz".</p>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Přidat do galerie</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Nahrát do cloudu</button>
                     </form>
                 </div>
 
@@ -181,7 +167,7 @@
         <div class="lightbox-nav lightbox-prev" onclick="changeLightboxMedia(-1)">❮</div>
         
         <div class="lightbox-content" id="lightbox-media-container">
-            </div>
+        </div>
         
         <div class="lightbox-nav lightbox-next" onclick="changeLightboxMedia(1)">❯</div>
     </div>
@@ -206,102 +192,85 @@
         </div>
     </footer>
 
-    <script>
-        // --- 1. DATA A PAMĚŤ ---
-        const defaultGallery = [
-            { id: 101, title: "Změna barev ambientního osvětlení", type: "image", src: "images/auto.png", visible: true },
-            { id: 102, title: "Diagnostika Škoda Rapid 1.2 TSI (CBZB)", type: "image", src: "images/kabel.jpg", visible: true }
-        ];
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
-        let galleryData = JSON.parse(localStorage.getItem('vag_gallery'));
-        // Zabraňuje nechtěnému navrácení výchozích dat, pokud byly smazány
-        if (!galleryData) {
-            galleryData = defaultGallery;
-            saveGallery();
+    <script>
+        // --- 1. FIREBASE NASTAVENÍ (Tvé klíče) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxKk68YfB9uerCr9UZ1gOJanuCTa3fXTM",
+            authDomain: "vagcoding-e1192.firebaseapp.com",
+            projectId: "vagcoding-e1192",
+            storageBucket: "vagcoding-e1192.firebasestorage.app",
+            messagingSenderId: "499306352311",
+            appId: "1:499306352311:web:341225ebfe04530aa70732",
+            measurementId: "G-90BNY64SXQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // --- 2. DATA A PAMĚŤ Z CLOUDU ---
+        let galleryData = [];
+
+        async function loadGallery() {
+            try {
+                const doc = await db.collection('settings').doc('gallery').get();
+                if (doc.exists) {
+                    galleryData = doc.data().items || [];
+                }
+                renderPublicGallery();
+                checkAdmin();
+            } catch (error) {
+                console.error("Chyba při načítání:", error);
+            }
         }
 
-        // Uloží do paměti s bezpečnostní pojistkou proti přeplnění Limitů prohlížeče
-        function saveGallery() { 
+        async function saveGallery() {
             try {
-                localStorage.setItem('vag_gallery', JSON.stringify(galleryData)); 
+                await db.collection('settings').doc('gallery').set({ items: galleryData });
                 return true;
             } catch (e) {
-                console.error("Local storage je plný", e);
+                alert("Nastavte Firestore a Storage do Test Módu ve Firebase! " + e.message);
                 return false;
             }
         }
 
-        // --- DEKODÉR ODKAZŮ PRO YOUTUBE A GOOGLE DISK ---
-        function getEmbedUrl(url) {
-            try {
-                if (url.includes('youtube.com/watch')) {
-                    const params = new URLSearchParams(new URL(url).search);
-                    return `https://www.youtube.com/embed/${params.get('v')}`;
-                }
-                if (url.includes('youtu.be/')) {
-                    const id = url.split('youtu.be/')[1].split('?')[0];
-                    return `https://www.youtube.com/embed/${id}`;
-                }
-                if (url.includes('youtube.com/shorts/')) {
-                    const id = url.split('/shorts/')[1].split('?')[0];
-                    return `https://www.youtube.com/embed/${id}`;
-                }
-                if (url.includes('drive.google.com/file/d/')) {
-                    const id = url.split('/d/')[1].split('/')[0];
-                    return `https://drive.google.com/file/d/${id}/preview`;
-                }
-            } catch(e) { console.error("Chyba při parsování URL", e); }
-            return url;
-        }
-
-        // --- 2. VYKRESLENÍ GALERIE (VEŘEJNÁ ČÁST) ---
+        // --- 3. VYKRESLENÍ GALERIE ---
         function renderPublicGallery() {
             const track = document.getElementById('public-gallery-track');
             if(!track) return;
             track.innerHTML = '';
             
             const visibleItems = galleryData.filter(item => item.visible);
-            
             if (visibleItems.length === 0) {
                 track.innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center;">Galerie je momentálně prázdná.</p>';
                 return;
             }
 
             visibleItems.forEach((item, index) => {
-                let mediaTag = '';
-                let icon = '';
-
-                // Pokud je to odkaz z YouTube nebo Disku
-                if (item.type === 'video_link') {
-                    mediaTag = `<iframe src="${getEmbedUrl(item.src)}" style="width:100%; height:100%; pointer-events:none;" frameborder="0"></iframe>`;
-                } 
-                // Pokud je to přímo nahrané video z PC
-                else if (item.type === 'video_file' || item.type === 'video') {
-                    mediaTag = `<video src="${item.src}#t=0.1" preload="metadata" muted playsinline></video>`;
-                } 
-                // Klasická fotka
-                else {
-                    mediaTag = `<img src="${item.src}" alt="${item.title}">`;
-                }
+                const isVideo = item.type.includes('video');
+                const mediaTag = isVideo 
+                    ? `<video src="${item.src}#t=0.1" preload="metadata" muted playsinline></video>` 
+                    : `<img src="${item.src}" alt="${item.title}">`;
 
                 track.innerHTML += `
                     <div class="carousel-item" onclick="openLightbox(${index})">
                         ${mediaTag}
-                        ${icon}
                         <div class="item-title-overlay">${item.title}</div>
                     </div>
                 `;
             });
         }
 
-        // Posouvání šipkami v carouselu
         function scrollCarousel(direction) {
             const track = document.getElementById('public-gallery-track');
-            const scrollAmount = 340; 
-            track.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            track.scrollBy({ left: direction * 340, behavior: 'smooth' });
         }
 
-        // --- 3. LIGHTBOX (FULLSCREEN) ---
+        // --- 4. LIGHTBOX ---
         let currentLightboxIndex = 0;
         let lightboxItems = [];
 
@@ -314,8 +283,7 @@
 
         function closeLightbox() {
             document.getElementById('lightboxModal').classList.remove('show-modal');
-            const container = document.getElementById('lightbox-media-container');
-            container.innerHTML = ''; // Zastaví přehrávání videa při zavření
+            document.getElementById('lightbox-media-container').innerHTML = ''; 
         }
 
         function changeLightboxMedia(direction) {
@@ -329,12 +297,7 @@
             const item = lightboxItems[currentLightboxIndex];
             const container = document.getElementById('lightbox-media-container');
             
-            if (item.type === 'video_link') {
-                container.innerHTML = `
-                    <iframe src="${getEmbedUrl(item.src)}" class="lightbox-media" style="width: 100%; min-height: 50vh;" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                    <div class="lightbox-title">${item.title}</div>
-                `;
-            } else if (item.type === 'video_file' || item.type === 'video') {
+            if (item.type.includes('video')) {
                 container.innerHTML = `
                     <video src="${item.src}" controls autoplay class="lightbox-media"></video>
                     <div class="lightbox-title">${item.title}</div>
@@ -347,7 +310,7 @@
             }
         }
 
-        // --- 4. ADMINISTRACE (LOGIN A DASHBOARD) ---
+        // --- 5. ADMINISTRACE A NAHRÁVÁNÍ DO CLOUDU ---
         function checkAdmin() {
             const isAdmin = sessionStorage.getItem('vag_gallery_admin') === 'true';
             const adminSection = document.getElementById('admin-gallery-dashboard');
@@ -359,11 +322,9 @@
             document.getElementById('adminLoginModal').classList.add('show-modal');
             document.getElementById('login-error').style.display = 'none';
         }
-
         function closeAdminLoginModal() {
             document.getElementById('adminLoginModal').classList.remove('show-modal');
         }
-
         function handleAdminLogin(e) {
             e.preventDefault();
             const user = document.getElementById('admin-user').value;
@@ -378,84 +339,75 @@
                 document.getElementById('login-error').style.display = 'block';
             }
         }
-
         function logoutGalleryAdmin() {
             sessionStorage.removeItem('vag_gallery_admin');
             checkAdmin();
         }
 
-        function toggleMediaInput() {
-            const type = document.getElementById('add-media-type').value;
-            document.getElementById('input-file-box').style.display = type === 'file' ? 'block' : 'none';
-            document.getElementById('input-link-box').style.display = type === 'link' ? 'block' : 'none';
-        }
-
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
         async function handleAddMedia(e) {
             e.preventDefault();
             const title = document.getElementById('add-media-title').value;
-            const sourceType = document.getElementById('add-media-type').value;
-            
-            let type = 'image';
-            let src = '';
+            const file = document.getElementById('add-media-file').files[0];
 
-            // Rozdělení logiky: buď fotka/video z PC nebo Odkaz
-            if (sourceType === 'file') {
-                const file = document.getElementById('add-media-file').files[0];
-                if (!file) return alert('Vyberte soubor!');
-                if (file.size > 2500000) return alert('Soubor je moc velký! Maximum je 2.5 MB.');
+            if (!file) return alert('Vyberte soubor!');
+            if (file.size > 50000000) return alert('Soubor je moc velký! Maximum je 50 MB.');
+
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Nahrávám do cloudu... (čekejte)";
+            btn.disabled = true;
+
+            try {
+                const type = file.type.startsWith('video/') ? 'video' : 'image';
                 
-                type = file.type.startsWith('video/') ? 'video_file' : 'image';
-                src = await getBase64(file);
-            } else {
-                src = document.getElementById('add-media-url').value;
-                if (!src) return alert('Vložte URL odkaz!');
-                type = 'video_link';
-            }
+                // 1. Nahrání do Firebase Storage
+                const storageRef = storage.ref('gallery/' + Date.now() + '_' + file.name);
+                await storageRef.put(file);
+                
+                // 2. Získání reálného odkazu
+                const src = await storageRef.getDownloadURL();
 
-            const newItem = { id: Date.now(), title, type, src, visible: true };
-            galleryData.unshift(newItem); // Přidá jako první v pořadí
-            
-            const success = saveGallery();
-            if (!success) {
-                galleryData.shift(); // Smaže poslední pokus, pokud nevyšel kvůli plné paměti
-                return alert('Chyba: Paměť prohlížeče je plná! Smažte prosím starší videa nebo fotky.');
-            }
+                // 3. Uložení do Firebase Databáze
+                const newItem = { id: Date.now().toString(), title, type, src, visible: true };
+                galleryData.unshift(newItem);
+                await saveGallery();
 
-            e.target.reset();
-            toggleMediaInput(); // reset zobrazení políček
-            renderPublicGallery();
-            renderAdminGallery();
+                e.target.reset();
+                renderPublicGallery();
+                renderAdminGallery();
+            } catch(error) {
+                alert("Nahrávání selhalo: Ujistěte se, že máte ve Firebase povolený Storage v Test Módu.");
+                console.error(error);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         }
 
-        function deleteMedia(id) {
+        async function deleteMedia(id) {
             if(confirm("Opravdu smazat tuto ukázku?")) {
+                const item = galleryData.find(i => i.id === id);
+                if (item && item.src.includes('firebasestorage')) {
+                    try { await storage.refFromURL(item.src).delete(); } catch(e) {}
+                }
                 galleryData = galleryData.filter(i => i.id !== id);
-                saveGallery();
+                await saveGallery();
                 renderPublicGallery();
                 renderAdminGallery();
             }
         }
 
-        function toggleMediaVisibility(id) {
+        async function toggleMediaVisibility(id) {
             const item = galleryData.find(i => i.id === id);
             if(item) {
                 item.visible = !item.visible;
-                saveGallery();
+                await saveGallery();
                 renderPublicGallery();
                 renderAdminGallery();
             }
         }
 
-        // --- 5. DRAG AND DROP (ŘAZENÍ V ADMINU) ---
+        // --- 6. DRAG AND DROP ---
         let draggedItemId = null;
 
         function renderAdminGallery() {
@@ -463,16 +415,16 @@
             list.innerHTML = '';
             
             galleryData.forEach(item => {
-                const icon = (item.type === 'video_link' || item.type === 'video_file' || item.type === 'video') ? '🎬' : '📸';
+                const icon = item.type === 'video' ? '🎬' : '📸';
                 const eyeColor = item.visible ? 'var(--accent)' : '#555';
                 const eyeText = item.visible ? 'Viditelné' : 'Skryté';
 
                 list.innerHTML += `
                     <div class="admin-gallery-row" draggable="true" 
-                         ondragstart="dragStart(event, ${item.id})" 
+                         ondragstart="dragStart(event, '${item.id}')" 
                          ondragover="dragOver(event)" 
                          ondragleave="dragLeave(event)" 
-                         ondrop="drop(event, ${item.id})">
+                         ondrop="drop(event, '${item.id}')">
                         
                         <div style="display:flex; align-items:center; gap:15px; pointer-events:none;">
                             <span style="cursor:grab; font-size:1.2rem;">☰</span>
@@ -481,26 +433,18 @@
                         </div>
                         
                         <div style="display:flex; gap:10px;">
-                            <button onclick="toggleMediaVisibility(${item.id})" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; color:${eyeColor}; border-color:${eyeColor};">${eyeText}</button>
-                            <button onclick="deleteMedia(${item.id})" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;">Smazat</button>
+                            <button onclick="toggleMediaVisibility('${item.id}')" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; color:${eyeColor}; border-color:${eyeColor};">${eyeText}</button>
+                            <button onclick="deleteMedia('${item.id}')" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;">Smazat</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function dragStart(e, id) {
-            draggedItemId = id;
-            e.dataTransfer.effectAllowed = 'move';
-        }
-        function dragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('drag-over');
-        }
-        function dragLeave(e) {
-            e.currentTarget.classList.remove('drag-over');
-        }
-        function drop(e, targetId) {
+        function dragStart(e, id) { draggedItemId = id; e.dataTransfer.effectAllowed = 'move'; }
+        function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+        function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+        async function drop(e, targetId) {
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over');
             
@@ -512,20 +456,17 @@
             const [movedItem] = galleryData.splice(fromIndex, 1);
             galleryData.splice(toIndex, 0, movedItem);
             
-            saveGallery();
+            await saveGallery();
             renderPublicGallery();
             renderAdminGallery();
         }
 
-        // --- 6. GLOBÁLNÍ EVENTS (Klávesy a kliknutí) ---
+        // --- 7. GLOBÁLNÍ EVENTS ---
         window.onclick = function(event) {
-            const adminModal = document.getElementById('adminLoginModal');
-            const lightbox = document.getElementById('lightboxModal');
-            if (event.target === adminModal) closeAdminLoginModal();
-            if (event.target === lightbox) closeLightbox();
+            if (event.target === document.getElementById('adminLoginModal')) closeAdminLoginModal();
+            if (event.target === document.getElementById('lightboxModal')) closeLightbox();
         }
 
-        // Podpora pro Esc a šipky
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLightbox();
@@ -537,9 +478,8 @@
             }
         });
 
-        // --- INICIALIZACE PO NAČTENÍ ---
-        renderPublicGallery();
-        checkAdmin();
+        // START (Načtení z cloudu)
+        loadGallery();
     </script>
 
 </body>

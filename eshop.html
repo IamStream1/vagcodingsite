@@ -13,72 +13,77 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">E-<span>Shop</span></a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-btn">← Zpět na hlavní web</a>
-            </div>
+            <a href="index.html" class="logo">VAG<span>Coding</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html#o-nas">O nás</a></li>
+                <li><a href="index.html#sluzby">Služby</a></li>
+                <li><a href="index.html#nase-prace">Naše práce</a></li>
+                <li><a href="eshop.html" style="color: var(--accent);">E-Shop</a></li>
+                <li><a href="index.html#kontakt" class="nav-btn">Kontakt</a></li>
+            </ul>
         </div>
     </nav>
 
-    <header class="hero" style="min-height: 35vh; padding-top: 120px;">
+    <header class="hero" style="min-height: 30vh; padding-top: 120px; padding-bottom: 20px;">
         <div class="hero-content">
-            <h1>Nabídka <span>vybavení</span></h1>
-            <p>Diagnostické kabely, příslušenství a doplňky pro vozy VAG.</p>
+            <h1>E-<span>Shop</span></h1>
+            <p>Diagnostické kabely, LED sady a příslušenství pro váš vůz.</p>
         </div>
     </header>
 
-    <section class="services-section" style="background-color: var(--bg-dark); min-height: 40vh;">
+    <section class="services-section">
         <div class="container">
-            <div class="product-grid" id="public-product-grid">
+            <div id="public-product-grid" class="product-grid">
                 </div>
         </div>
     </section>
 
-    <section id="admin-dashboard" class="admin-section" style="display: none;">
+    <section id="admin-eshop-dashboard" class="admin-section" style="display: none;">
         <div class="container">
             <div class="admin-header">
-                <h2 class="section-title" style="margin: 0; font-size: 1.8rem;">⚙️ Administrace produktů</h2>
+                <h2 class="section-title" style="margin: 0; font-size: 1.8rem;">⚙️ Správa E-Shopu</h2>
                 <button onclick="logoutAdmin()" class="btn btn-secondary">🚪 Odhlásit se</button>
             </div>
 
-            <div class="admin-dashboard-grid">
-                <div class="admin-card add-card">
+            <div class="admin-dashboard-grid" style="grid-template-columns: 1fr;">
+                
+                <div class="admin-card add-card" style="max-width: 600px; margin: 0 auto 30px;">
                     <div class="card-icon">➕</div>
-                    <h3>Nový produkt</h3>
+                    <h3>Přidat nový produkt</h3>
                     <form onsubmit="handleAddProduct(event)">
-                        <input type="text" id="add-name" class="admin-input" placeholder="Název produktu" required>
-                        <textarea id="add-desc" class="admin-input" placeholder="Popis produktu" rows="3" required></textarea>
-                        <input type="number" id="add-price" class="admin-input" placeholder="Cena (Kč)" required>
-                        <label class="admin-label">Obrázek produktu:</label>
-                        <input type="file" id="add-img" class="admin-input" accept="image/*" required>
-                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Přidat produkt</button>
+                        <input type="text" id="add-product-name" class="admin-input" placeholder="Název produktu (např. VCDS Kabel)" required>
+                        <textarea id="add-product-desc" class="admin-input" placeholder="Popis produktu..." rows="3" required></textarea>
+                        <input type="number" id="add-product-price" class="admin-input" placeholder="Cena (Kč)" required>
+                        
+                        <label class="admin-label">Fotografie produktu:</label>
+                        <input type="file" id="add-product-file" class="admin-input" accept="image/*" required>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Přidat produkt do cloudu</button>
                     </form>
                 </div>
 
-                <div id="admin-product-list" style="display: contents;"></div>
+                <div>
+                    <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 15px; color: var(--accent);">Pořadí a úpravy (Přetáhněte myší pro změnu pořadí)</h3>
+                    <div id="admin-product-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <div id="productDetailModal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="modal-close" onclick="closeProductModal()">&times;</span>
-            <img id="modal-detail-img" src="" alt="Detail produktu" class="product-detail-img">
-            <h3 id="modal-detail-title" style="font-family: 'Orbitron', sans-serif; color: var(--accent); margin-bottom: 15px; font-size: 1.4rem;"></h3>
-            <p id="modal-detail-desc" style="color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;"></p>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 20px;">
-                <span id="modal-detail-price" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);"></span>
-                <a id="modal-detail-buy" href="#" class="btn btn-primary">Koupit hned</a>
-            </div>
+    <section class="contact-section">
+        <div class="container" style="text-align: center;">
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Objednávky produktů momentálně řešíme napřímo přes kontakt.<br>Máte o něco zájem? Napište nám!</p>
+            <a href="index.html#kontakt" class="btn btn-primary" style="margin-top: 15px;">Přejít na kontakty</a>
         </div>
-    </div>
+    </section>
 
     <div id="adminLoginModal" class="modal-overlay">
         <div class="modal-box" style="max-width: 350px; padding: 40px 25px;">
-            <span class="modal-close" onclick="closeAdminLoginModal()">&times;</span>
+            <span class="modal-close" onclick="closeAdminLoginModal()">×</span>
             <h3 style="font-family: 'Orbitron', sans-serif; margin-bottom: 20px; text-align: center;">🔒 Admin Login</h3>
             <div id="login-error" style="color: var(--accent); display: none; margin-bottom: 10px; font-size: 0.9rem; text-align: center;">Nesprávné jméno nebo heslo.</div>
-            <form onsubmit="handleLogin(event)">
+            <form onsubmit="handleAdminLogin(event)">
                 <input type="text" id="admin-user" class="admin-input" placeholder="Uživatelské jméno" required autocomplete="username">
                 <input type="password" id="admin-pass" class="admin-input" placeholder="Heslo" required autocomplete="current-password">
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Přihlásit se</button>
@@ -86,228 +91,260 @@
         </div>
     </div>
 
-     <footer class="main-footer">
+    <footer class="main-footer">
         <div class="container" style="display: flex; justify-content: center; align-items: center; gap: 15px;">
             <p style="margin: 0;">© 2026 Všechna práva vyhrazená.</p>
             <span onclick="openAdminLoginModal()" style="cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">🔒 Admin Login</span>
         </div>
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
     <script>
-        const defaultProducts = [
-            { id: 1, name: "VCDS Diagnostický kabel (Klon)", desc: "Plně funkční kabel pro platformu VAG. Podpora vozů do roku 2023. Ideální pro domácí diagnostiku, čtení/mazání chyb, měřené hodnoty a základní kódování jednotek. Kódovací software VCDS je součástí dodávky.", price: 1200, image: "images/kabel.jpg", visible: true },
-            { id: 2, name: "Sada LED žárovek interiéru", desc: "Kompletní sada CAN-BUS nehlásící chybu. Čistě bílé světlo 6000K. Balení obsahuje žárovky pro stropní lampičky (vpředu i vzadu), osvětlení kufru a přihrádky spolujezdce. Extrémní životnost a snadná výměna plug&play.", price: 650, image: "images/led.jpg", visible: true }
-        ];
+        // --- 1. FIREBASE NASTAVENÍ (Stejné jako v index.html) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxKk68YfB9uerCr9UZ1gOJanuCTa3fXTM",
+            authDomain: "vagcoding-e1192.firebaseapp.com",
+            projectId: "vagcoding-e1192",
+            storageBucket: "vagcoding-e1192.firebasestorage.app",
+            messagingSenderId: "499306352311",
+            appId: "1:499306352311:web:341225ebfe04530aa70732",
+            measurementId: "G-90BNY64SXQ"
+        };
 
-        let products = JSON.parse(localStorage.getItem('vag_products'));
-        
-        // Zabráníme tomu, aby se produkty vracely, když je schválně smažeš
-        if (!products) { 
-            products = defaultProducts;
-            saveProducts();
-        }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        function saveProducts() {
-            localStorage.setItem('vag_products', JSON.stringify(products));
-        }
+        // --- 2. DATA Z CLOUDU ---
+        let productsData = [];
 
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        // --- VYKRESLOVÁNÍ ---
-        function renderApp() {
-            const isAdmin = sessionStorage.getItem('vag_admin') === 'true';
-            
-            document.getElementById('admin-dashboard').style.display = isAdmin ? 'block' : 'none';
-            
-            const publicGrid = document.getElementById('public-product-grid');
-            publicGrid.innerHTML = '';
-            
-            products.forEach(p => {
-                if (p.visible || isAdmin) {
-                    const visibilityBadge = (!p.visible && isAdmin) ? `<div style="position:absolute; top:10px; left:10px; background:var(--accent); color:#fff; padding:3px 8px; border-radius:4px; font-size:0.8rem; font-weight:bold; z-index:5;">SKRYTO</div>` : '';
-                    const opacityStyle = (!p.visible && isAdmin) ? 'opacity: 0.5;' : '';
-                    
-                    // Zkrácení popisu pro kartu
-                    const shortDesc = p.desc.length > 70 ? p.desc.substring(0, 70) + '...' : p.desc;
-
-                    publicGrid.innerHTML += `
-                        <div class="product-card clickable-card" style="position:relative; ${opacityStyle}" onclick="openProductModal(${p.id})">
-                            ${visibilityBadge}
-                            <img src="${p.image}" alt="${p.name}">
-                            <div class="product-info">
-                                <h3>${p.name}</h3>
-                                <p class="product-desc">${shortDesc}</p>
-                                <div class="product-bottom">
-                                    <span class="product-price">${p.price} Kč</span>
-                                    <span class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.85rem;">Detail</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+        async function loadProducts() {
+            try {
+                // E-shop se ukládá do dokumentu "eshop" (galerie je v "gallery")
+                const doc = await db.collection('settings').doc('eshop').get();
+                if (doc.exists) {
+                    productsData = doc.data().items || [];
                 }
-            });
+                renderPublicProducts();
+                checkAdmin();
+            } catch (error) {
+                console.error("Chyba při načítání e-shopu:", error);
+            }
+        }
 
-            if (isAdmin) {
-                const adminList = document.getElementById('admin-product-list');
-                adminList.innerHTML = '';
-                
-                products.forEach(p => {
-                    adminList.innerHTML += `
-                        <div class="admin-card">
-                            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                                <img src="${p.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
-                                <div style="flex-grow: 1;">
-                                    <input type="text" id="edit-name-${p.id}" class="admin-input" value="${p.name}" required>
-                                    <input type="number" id="edit-price-${p.id}" class="admin-input" value="${p.price}" required>
-                                </div>
-                            </div>
-                            <textarea id="edit-desc-${p.id}" class="admin-input" rows="3" required>${p.desc}</textarea>
-                            
-                            <label class="admin-label">Nahradit obrázek (nepovinné):</label>
-                            <input type="file" id="edit-img-${p.id}" class="admin-input" accept="image/*">
-                            
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
-                                <label class="toggle-switch">
-                                    <input type="checkbox" ${p.visible ? 'checked' : ''} onchange="toggleVisibility(${p.id})">
-                                    <span class="slider"></span>
-                                    <span style="margin-left: 50px; font-size: 0.85rem; color: var(--text-muted);">Viditelný</span>
-                                </label>
-                                <div style="display: flex; gap: 10px;">
-                                    <button onclick="saveEdit(${p.id})" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Uložit</button>
-                                    <button onclick="deleteProduct(${p.id})" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem; color: var(--accent); border-color: var(--accent);">Smazat</button>
-                                </div>
+        async function saveProducts() {
+            try {
+                await db.collection('settings').doc('eshop').set({ items: productsData });
+                return true;
+            } catch (e) {
+                alert("Chyba při ukládání do cloudu: " + e.message);
+                return false;
+            }
+        }
+
+        // --- 3. VYKRESLENÍ PRODUKTŮ ---
+        function renderPublicProducts() {
+            const grid = document.getElementById('public-product-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            
+            const visibleItems = productsData.filter(item => item.visible);
+            
+            if (visibleItems.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center; grid-column: 1 / -1;">Žádné produkty momentálně nejsou v nabídce.</p>';
+                return;
+            }
+
+            visibleItems.forEach((product) => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="product-info">
+                            <h3>${product.name}</h3>
+                            <p class="product-desc">${product.desc}</p>
+                            <div class="product-bottom">
+                                <span class="product-price">${product.price} Kč</span>
+                                <a href="index.html#kontakt" class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;">Mám zájem</a>
                             </div>
                         </div>
-                    `;
-                });
-            }
+                    </div>
+                `;
+            });
         }
 
-        // --- MODÁLNÍ OKNA A DETAIL PRODUKTU ---
-        function openProductModal(id) {
-            const p = products.find(prod => prod.id === id);
-            if (!p) return;
-            
-            document.getElementById('modal-detail-img').src = p.image;
-            document.getElementById('modal-detail-title').innerText = p.name;
-            document.getElementById('modal-detail-desc').innerText = p.desc;
-            document.getElementById('modal-detail-price').innerText = p.price + ' Kč';
-            
-            const buyBtn = document.getElementById('modal-detail-buy');
-            // Zabraňuje nákupu pokud je produkt skrytý, i pro admina v náhledu
-            if (p.visible) {
-                buyBtn.style.display = 'block';
-                buyBtn.href = `checkout.html?product=${encodeURIComponent(p.name)}&price=${p.price}`;
-            } else {
-                buyBtn.style.display = 'none';
-            }
-            
-            document.getElementById('productDetailModal').classList.add('show-modal');
-        }
-
-        function closeProductModal() {
-            document.getElementById('productDetailModal').classList.remove('show-modal');
+        // --- 4. ADMINISTRACE E-SHOPU ---
+        function checkAdmin() {
+            const isAdmin = sessionStorage.getItem('vag_gallery_admin') === 'true';
+            const adminSection = document.getElementById('admin-eshop-dashboard');
+            if(adminSection) adminSection.style.display = isAdmin ? 'block' : 'none';
+            if (isAdmin) renderAdminProducts();
         }
 
         function openAdminLoginModal() {
             document.getElementById('adminLoginModal').classList.add('show-modal');
             document.getElementById('login-error').style.display = 'none';
         }
-
         function closeAdminLoginModal() {
             document.getElementById('adminLoginModal').classList.remove('show-modal');
         }
-
-        // Zavření po kliknutí mimo box
-        window.onclick = function(event) {
-            const adminModal = document.getElementById('adminLoginModal');
-            const prodModal = document.getElementById('productDetailModal');
-            if (event.target === adminModal) closeAdminLoginModal();
-            if (event.target === prodModal) closeProductModal();
-        }
-
-        // --- LOGIKA PŘIHLÁŠENÍ ADMINA ---
-        function handleLogin(e) {
+        function handleAdminLogin(e) {
             e.preventDefault();
             const user = document.getElementById('admin-user').value;
             const pass = document.getElementById('admin-pass').value;
 
             if (user === 'admin' && pass === 'admin1212') {
-                sessionStorage.setItem('vag_admin', 'true');
+                sessionStorage.setItem('vag_gallery_admin', 'true');
                 document.getElementById('admin-pass').value = '';
                 closeAdminLoginModal();
-                renderApp();
+                checkAdmin();
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
         }
-
         function logoutAdmin() {
-            sessionStorage.removeItem('vag_admin');
-            renderApp();
+            sessionStorage.removeItem('vag_gallery_admin');
+            checkAdmin();
         }
 
-        // --- LOGIKA PRODUKTŮ ---
         async function handleAddProduct(e) {
             e.preventDefault();
-            const name = document.getElementById('add-name').value;
-            const desc = document.getElementById('add-desc').value;
-            const price = document.getElementById('add-price').value;
-            const imgFile = document.getElementById('add-img').files[0];
+            const name = document.getElementById('add-product-name').value;
+            const desc = document.getElementById('add-product-desc').value;
+            const price = document.getElementById('add-product-price').value;
+            const file = document.getElementById('add-product-file').files[0];
 
-            let imgData = "images/kabel.jpg"; 
-            if (imgFile) imgData = await getBase64(imgFile);
+            if (!file) return alert('Vyberte fotografii produktu!');
+            if (file.size > 20000000) return alert('Obrázek je moc velký! (Max 20MB)');
 
-            const newProduct = {
-                id: Date.now(), name, desc, price: parseFloat(price), image: imgData, visible: true
-            };
-            products.push(newProduct);
-            saveProducts();
-            e.target.reset();
-            renderApp();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Nahrávám fotografii... (čekejte)";
+            btn.disabled = true;
+
+            try {
+                // 1. Nahrání obrázku produktu do Firebase Storage (složka eshop)
+                const storageRef = storage.ref('eshop/' + Date.now() + '_' + file.name);
+                await storageRef.put(file);
+                
+                // 2. Získání odkazu
+                const imageSrc = await storageRef.getDownloadURL();
+
+                // 3. Uložení dat produktu
+                const newProduct = { 
+                    id: Date.now().toString(), 
+                    name, 
+                    desc, 
+                    price, 
+                    image: imageSrc, 
+                    visible: true 
+                };
+                
+                productsData.unshift(newProduct);
+                await saveProducts();
+
+                e.target.reset();
+                renderPublicProducts();
+                renderAdminProducts();
+            } catch(error) {
+                alert("Nahrávání selhalo: " + error.message);
+                console.error(error);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
         }
 
-        async function saveEdit(id) {
-            const product = products.find(p => p.id === id);
-            if (!product) return;
+        async function deleteProduct(id) {
+            if(confirm("Opravdu smazat tento produkt?")) {
+                const item = productsData.find(i => i.id === id);
+                if (item && item.image.includes('firebasestorage')) {
+                    try { await storage.refFromURL(item.image).delete(); } catch(e) {}
+                }
+                productsData = productsData.filter(i => i.id !== id);
+                await saveProducts();
+                renderPublicProducts();
+                renderAdminProducts();
+            }
+        }
 
-            product.name = document.getElementById(`edit-name-${id}`).value;
-            product.price = parseFloat(document.getElementById(`edit-price-${id}`).value);
-            product.desc = document.getElementById(`edit-desc-${id}`).value;
+        async function toggleProductVisibility(id) {
+            const item = productsData.find(i => i.id === id);
+            if(item) {
+                item.visible = !item.visible;
+                await saveProducts();
+                renderPublicProducts();
+                renderAdminProducts();
+            }
+        }
+
+        // --- 5. DRAG AND DROP (Pořadí produktů) ---
+        let draggedItemId = null;
+
+        function renderAdminProducts() {
+            const list = document.getElementById('admin-product-list');
+            list.innerHTML = '';
             
-            const imgFile = document.getElementById(`edit-img-${id}`).files[0];
-            if (imgFile) product.image = await getBase64(imgFile);
+            productsData.forEach(item => {
+                const eyeColor = item.visible ? 'var(--accent)' : '#555';
+                const eyeText = item.visible ? 'Viditelné' : 'Skryté';
 
-            saveProducts();
-            renderApp();
-            alert("Změny uloženy.");
+                list.innerHTML += `
+                    <div class="admin-gallery-row" draggable="true" 
+                         ondragstart="dragStart(event, '${item.id}')" 
+                         ondragover="dragOver(event)" 
+                         ondragleave="dragLeave(event)" 
+                         ondrop="drop(event, '${item.id}')">
+                        
+                        <div style="display:flex; align-items:center; gap:15px; pointer-events:none;">
+                            <span style="cursor:grab; font-size:1.2rem;">☰</span>
+                            <img src="${item.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            <strong style="color:var(--text-main);">${item.name}</strong>
+                            <span style="color:var(--accent); font-weight:bold;">${item.price} Kč</span>
+                        </div>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="toggleProductVisibility('${item.id}')" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; color:${eyeColor}; border-color:${eyeColor};">${eyeText}</button>
+                            <button onclick="deleteProduct('${item.id}')" class="btn btn-primary" style="padding: 4px 10px; font-size: 0.8rem;">Smazat</button>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        function toggleVisibility(id) {
-            const product = products.find(p => p.id === id);
-            if (product) {
-                product.visible = !product.visible;
-                saveProducts();
-                renderApp();
-            }
+        function dragStart(e, id) { draggedItemId = id; e.dataTransfer.effectAllowed = 'move'; }
+        function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+        function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+        async function drop(e, targetId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (draggedItemId === targetId) return;
+
+            const fromIndex = productsData.findIndex(i => i.id === draggedItemId);
+            const toIndex = productsData.findIndex(i => i.id === targetId);
+            
+            const [movedItem] = productsData.splice(fromIndex, 1);
+            productsData.splice(toIndex, 0, movedItem);
+            
+            await saveProducts();
+            renderPublicProducts();
+            renderAdminProducts();
         }
 
-        function deleteProduct(id) {
-            if (confirm("Opravdu chcete tento produkt smazat? Tato akce je nevratná.")) {
-                products = products.filter(p => p.id !== id);
-                saveProducts();
-                renderApp();
-            }
+        // Zavírání oken
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('adminLoginModal')) closeAdminLoginModal();
         }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAdminLoginModal();
+        });
 
-        renderApp();
+        // START
+        loadProducts();
     </script>
+
 </body>
 </html>
